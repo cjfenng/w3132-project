@@ -1,3 +1,5 @@
+import datetime
+
 import torch
 import time
 import torch.nn as nn
@@ -81,3 +83,11 @@ plt.legend()
 plt.grid(True)
 plt.show()
 
+current_time = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M")
+
+
+model_path = 'C:\\Users\\ROG\\PycharmProjects\\w3132-project\\Seed\\transformer_model.pth'
+torch.save(model.state_dict(), model_path)
+
+
+print(f"Model saved as '{model_path}'")
