@@ -103,3 +103,26 @@ def get_test_stock_data():
         actual_data.append(current_actual_data)
 
     return test_data, actual_data
+
+
+def get_past_data(stock_code, predict_date, days=10):
+    """
+    Retrieve stock data for the past specified number of days.
+    """
+    pro = ts.pro_api()
+
+    # Get the most recent trading days
+    trade_cal = pro.trade_cal(exchange='', start_date='20100101', end_date=predict_date)
+    trade_cal = trade_cal[trade_cal['is_open'] == 1]  # Filter out trading days
+    trade_cal = trade_cal.sort_values(by='cal_date', ascending=False)  # Sort by date in descending order
+
+    # Get the days+1 trading days before the predict_date, including predict_date
+    past_dates = trade_cal[trade_cal['cal_date'] <= predict_date].iloc[:days+1]
+    start_date = past_dates.iloc[-1]['cal_date']  # Get start_date
+    end_date = past_dates.iloc[0]['cal_date']  # Get end_date
+
+    # Retrieve stock data from Tushare
+    df = pro.daily(ts_code=stock_code, start_date=start_date, end_date=end_date)
+    df.sort_values('trade_date', inplace=True)  # Sort by trading date
+
+    return df
